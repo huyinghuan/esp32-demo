@@ -92,12 +92,12 @@ pio device monitor
 设备会根据设备ID动态生成MQTT主题：
 
 ### 发布主题（设备发送）
-- `esp32/{device_id}/button/press` - 按钮按下事件
+- `esp32/{device_id}/sensor` - 按钮按下事件
 - `esp32/{device_id}/status` - 设备状态和心跳
 
 ### 订阅主题（设备接收）
 - `esp32/{device_id}/command` - 设备控制命令
-- `esp32/global/broadcast` - 全局广播命令
+- `esp32/command` - 全局控制命令
 
 ### 消息格式
 
@@ -105,39 +105,11 @@ pio device monitor
 
 ```json
 {
-  "event_type": "button",
-  "device_id": 1,
-  "sensor": "button",
-  "value": "pressed",
-  "timestamp": 12345
+  "e": "事件名称",
+  "did": 1, // 设备id
+  "s": "传感器",
+  "value": "传感器值",
 }
-```
-
-## 🔧 设备管理
-
-### 设备ID设置
-
-通过串口命令设置设备ID：
-
-```bash
-SET_ID:123    # 设置设备ID为123
-GET_ID        # 获取当前设备ID
-HELP          # 显示帮助信息
-```
-
-### MQTT命令
-
-发送命令到设备：
-
-```bash
-# 设备状态查询
-mosquitto_pub -h your_mqtt_server -t "esp32/1/command" -m "status"
-
-# 重置按钮计数
-mosquitto_pub -h your_mqtt_server -t "esp32/1/command" -m "reset_counter"
-
-# LED闪烁测试
-mosquitto_pub -h your_mqtt_server -t "esp32/1/command" -m "blink"
 ```
 
 ## 🔒 安全说明
