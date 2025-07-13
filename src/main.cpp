@@ -5,6 +5,7 @@
 #include "devices/button.h"
 #include "devices/led.h"
 #include "messages/messages.h"
+#include "devices/screen.h"
 
 // 配置变量定义（从secrets.h获取）
 const char* ssid = WIFI_SSID;
@@ -55,6 +56,7 @@ void setup() {
   
   // 配置GPIO
   initLED(ledPin);
+  initScreen();
   
   // 初始化各个模块
   initWiFi();

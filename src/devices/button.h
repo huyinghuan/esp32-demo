@@ -12,4 +12,8 @@ void sendButtonPressMessage();
 bool isButtonPressed();
 unsigned long getLastButtonPressTime();
 
+// 表情状态管理
+int getCurrentEmojiType();
+void switchToNextEmoji();
+
 #endif
