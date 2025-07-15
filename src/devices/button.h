@@ -3,10 +3,12 @@
 
 #include <Arduino.h>
 
+// 按钮事件回调函数类型定义
+typedef void (*ButtonPressCallback)();
+
 // 按钮管理函数
-void initButton();
+void initButton(ButtonPressCallback callback);
 void checkButton();
-void sendButtonPressMessage();
 
 // 如果需要获取按钮状态，可以添加getter函数
 bool isButtonPressed();

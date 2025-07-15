@@ -30,6 +30,26 @@ const unsigned long mqttCheckInterval = 1000;
 const unsigned long heartbeatInterval = 30000;
 const unsigned long debounceDelay = 50;
 
+// 按钮按下事件处理函数
+void onButtonPressed() {
+  Serial.println("处理按钮按下事件");
+  
+  #if WIFI_ENABLED && MQTT_ENABLED
+  if (isMQTTConnected()) {
+    // 使用统一的消息结构
+    MQTTMessage message = createButtonMessage("pressed");
+    String jsonMessage = message.toJSON();
+    
+    publishMessage(pub_topic_sensor.c_str(), jsonMessage.c_str());
+    Serial.println("MQTT消息发送成功: " + jsonMessage);
+  } else {
+    Serial.println("MQTT未连接，无法发送消息");
+  }
+  #else
+  Serial.println("MQTT功能未启用");
+  #endif
+}
+
 // 初始化设备主题
 void initDeviceTopics() {
   int deviceID = getDeviceID();
@@ -82,7 +102,7 @@ void setup() {
   initBluetooth();
 
 
-  initButton(); // 初始化按钮
+  initButton(onButtonPressed); // 初始化按钮  设置按钮按下回调函数
   
   // 显示设备信息
   Serial.println("\n=== 设备信息 ===");
@@ -120,3 +140,4 @@ void loop() {
   
   delay(10);
 }
+
