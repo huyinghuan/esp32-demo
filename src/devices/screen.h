@@ -21,8 +21,4 @@ void initScreen();
 void displayChineseText(const char* text, int x = 0, int y = 16);
 void displayMixedText(const char* line1, const char* line2, const char* line3 = nullptr);
 
-// 表情显示函数
-void drawHappyFace();
-void drawNeutralFace();
-void drawEmojiByType(int emojiType); // 0=笑脸, 1=平静脸
 #endif

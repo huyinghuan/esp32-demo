@@ -5,24 +5,24 @@
 String MQTTMessage::toJSON() const {
   String json = "{";
   
-  // 添加event_type字段（必填）
-  json += "\"e\":\"" + event_type + "\"";
+  // 添加 event_type 字段（必填）
+  json += "\"event_type\":\"" + event_type + "\"";
   
   // 添加device_id字段（必填）
   json += ",\"did\":" + String(getDeviceID());
   
-  // 添加sensor字段（可选）
+  // 添加 sensor 字段（可选）
   if (sensor.length() > 0) {
-    json += ",\"s\":\"" + sensor + "\"";
+    json += ",\"sensor\":\"" + sensor + "\"";
   }
   
-  // 添加value字段（可选）
+  // 添加 value 字段（可选）
   if (value.length() > 0) {
-    json += ",\"v\":\"" + value + "\"";
+    json += ",\"value\":\"" + value + "\"";
   }
   
   // 添加时间戳
-  json += ",\"t\":" + String(millis());
+  json += ",\"timestamp\":" + String(millis());
   
   json += "}";
   return json;

@@ -105,9 +105,9 @@ pio device monitor
 
 ```json
 {
-  "e": "事件名称",
+  "event_type": "事件名称",
   "did": 1, // 设备id
-  "s": "传感器",
+  "sensor": "传感器",
   "value": "传感器值",
 }
 ```

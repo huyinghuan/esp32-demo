@@ -12,9 +12,6 @@ static int lastButtonState = HIGH;
 static unsigned long lastDebounceTime = 0;
 static unsigned long lastButtonPressTime = 0;
 
-// 表情状态变量
-static int currentEmojiType = 0; // 0=笑脸, 1=平静脸
-
 void initButton() {
   pinMode(buttonPin, INPUT_PULLUP);
   buttonPressed = false;
@@ -43,9 +40,6 @@ void checkButton() {
       lastButtonPressTime = millis();
       
       Serial.print("Button pressed up ");
-      
-      // 切换表情显示
-      switchToNextEmoji();
       
       // 发送MQTT消息
       sendButtonPressMessage();
@@ -78,24 +72,4 @@ bool isButtonPressed() {
 
 unsigned long getLastButtonPressTime() {
   return lastButtonPressTime;
-}
-
-// 表情状态管理函数
-int getCurrentEmojiType() {
-  return currentEmojiType;
-}
-
-void switchToNextEmoji() {
-  // 切换表情类型 (0 <-> 1)
-  currentEmojiType = (currentEmojiType == 0) ? 1 : 0;
-  
-  // 显示新的表情
-  drawEmojiByType(currentEmojiType);
-  
-  // 打印当前状态
-  if (currentEmojiType == 0) {
-    Serial.println("切换到笑脸表情 😊");
-  } else {
-    Serial.println("切换到平静表情 😐");
-  }
 }
