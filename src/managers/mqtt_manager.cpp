@@ -4,6 +4,8 @@
 #include "device_id_manager.h"
 #include "../devices/led.h"
 
+#if WIFI_ENABLED && MQTT_ENABLED
+
 // MQTT客户端
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -122,3 +124,5 @@ void handleCommand(String command) {
 //     publishMessage(pub_topic_status.c_str(), "blink_executed");
 //   }
 }
+
+#endif

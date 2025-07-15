@@ -1,7 +1,21 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// ==================== 设备功能启用配置 ====================
 // WiFi配置
+#define WIFI_ENABLED true            // 是否启用WiFi
+#define WIFI_POWER_SAVE_ENABLED true // 是否启用WiFi节能模式
+#define WIFI_SMART_MANAGEMENT true   // 是否启用智能WiFi管理
+#define BLUETOOTH_ENABLED false     // 是否启用蓝牙 设置为 false 可节省约 20-30mA 功耗
+#define MQTT_ENABLED true           // 是否启用MQTT
+#define HEARTBEAT_ENABLED true      // 是否启用心跳检测, 启用心跳必须启用MQTT
+
+// 电源管理配置
+#define POWER_MANAGEMENT_ENABLED true  // 是否启用电源管理
+#define DEEP_SLEEP_ENABLED true        // 是否启用深度睡眠
+#define CPU_POWER_SAVE_ENABLED true    // 是否启用CPU节能模式
+
+// ==================== 网络配置 ====================
 extern const char* ssid;
 extern const char* password;
 

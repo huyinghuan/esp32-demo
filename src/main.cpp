@@ -50,6 +50,16 @@ void setup() {
   Serial.begin(115200);
   Serial.println("ESP32 MQTT Button Client Starting...");
   
+  // 检查唤醒原因（如果从睡眠中唤醒）
+  #if POWER_MANAGEMENT_ENABLED
+  printESP32WakeupReason();
+  #endif
+  
+  // 初始化电源管理器
+  #if POWER_MANAGEMENT_ENABLED
+  initESP32PowerManager();
+  #endif
+  
   // 初始化设备ID和主题
   initDeviceID();
   initDeviceTopics();
@@ -58,12 +68,19 @@ void setup() {
   initLED(ledPin);
   initScreen();
   
-  // 初始化各个模块
-  // 暂时不需要的模块注释
-  // initWiFi(); // 初始化WiFi
-  // initMQTT(); // 初始化MQTT
+  // 初始化各个模块 选择性编译降低flash占用和功耗
+  #if WIFI_ENABLED
+  initWiFi(); // 初始化WiFi
+  #endif
+  #if WIFI_ENABLED  && MQTT_ENABLED
+  initMQTT(); // 初始化MQTT
   // initHeartbeat(); // 初始化心跳
-  // initButton(); // 初始化按钮
+  #endif
+  #if BLUETOOTH_ENABLED
+  initBluetoothIfEnabled(); // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
+  #endif
+
+  //initButton(); // 初始化按钮
   
   // 显示设备信息
   Serial.println("\n=== 设备信息 ===");
@@ -72,9 +89,22 @@ void setup() {
 }
 
 void loop() {
+  // 智能WiFi功耗管理
+  #if WIFI_ENABLED && WIFI_SMART_MANAGEMENT
+  smartWiFiManagement();
+  #endif
+  
+  // 智能电源管理
+  #if POWER_MANAGEMENT_ENABLED
+  smartESP32PowerManagement();
+  #endif
+  
   // 检查各个连接状态
   // checkWiFiConnection();
   // checkMQTTConnection();
+  
+  // 检查蓝牙连接状态
+  // checkBluetoothConnection();
   
   // 处理MQTT消息
   // handleMQTTLoop();
