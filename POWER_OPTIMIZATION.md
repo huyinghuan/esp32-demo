@@ -113,29 +113,6 @@ setupWakeupPin(GPIO_NUM_14, 0);  // 引脚14低电平唤醒
 
 ## 📈 优化建议
 
-### 1. 按使用场景选择策略
-
-**持续监控场景**:
-```cpp
-#define WIFI_POWER_SAVE_ENABLED true
-#define DEEP_SLEEP_ENABLED false
-// 使用调制解调器睡眠模式，保持连接
-```
-
-**定时上报场景**:
-```cpp
-#define WIFI_SMART_MANAGEMENT true
-#define DEEP_SLEEP_ENABLED true
-// 使用智能管理，在空闲时睡眠
-```
-
-**紧急响应场景**:
-```cpp
-#define WIFI_POWER_SAVE_ENABLED false
-#define POWER_MANAGEMENT_ENABLED false
-// 保持全功率模式，确保响应速度
-```
-
 ### 2. 硬件优化建议
 
 - 使用外部拉电阻而不是内部拉电阻

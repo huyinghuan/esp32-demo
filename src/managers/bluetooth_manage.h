@@ -15,12 +15,8 @@
 
 // 蓝牙管理函数
 void initBluetooth();
-void initBluetoothIfEnabled();  // 根据配置决定是否初始化
 void checkBluetoothConnection();
 bool isBluetoothConnected();
-bool isBluetoothEnabled();      // 检查蓝牙是否被启用
-void enableBluetooth();         // 手动启用蓝牙
-void disableBluetooth();        // 手动禁用蓝牙（节省功耗）
 void stopBluetooth();
 void restartBluetooth();
 void sendBluetoothMessage(const String& message);

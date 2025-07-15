@@ -12,8 +12,6 @@ String getDeviceIDString();
 String generateClientID();
 bool hasDeviceID();
 
-// 串口命令处理
-void handleSerialCommand();
 
 // 设备ID相关常量
 #define DEFAULT_DEVICE_ID 1

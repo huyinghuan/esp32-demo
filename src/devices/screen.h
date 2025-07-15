@@ -19,5 +19,11 @@ extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 // 屏幕管理函数
 void initScreen();
 
-
+// 省电相关函数
+void turnOffScreen();         // 软件关闭显示
+void turnOnScreen();          // 重新开启显示
+void setScreenBrightness(uint8_t brightness); // 设置亮度 (0-255)
+void screenSleep();           // 进入睡眠模式  
+void screenWakeup();          // 从睡眠模式唤醒
+void displayText(String text, int x = 0, int y = 15); // 显示文本的便捷函数
 #endif

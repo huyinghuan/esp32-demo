@@ -5,6 +5,7 @@
 #include "../messages/messages.h"
 #include <WiFi.h>
 
+#if WIFI_ENABLED && MQTT_ENABLED
 // 心跳状态变量
 unsigned long lastHeartbeat = 0;
 
@@ -22,17 +23,20 @@ void checkHeartbeat() {
 }
 
 void sendHeartbeat() {
-  if (isMQTTConnected()) {
-    // 创建心跳消息
-    MQTTMessage message = createHeartbeatMessage();
-    
-    // 添加额外的系统信息
-    String systemInfo = "uptime:" + String(millis() / 1000) + 
-                       ",wifi_rssi:" + String(WiFi.RSSI()) + 
-                       ",free_heap:" + String(ESP.getFreeHeap());
-    message.setValue(systemInfo);
-    
-    String jsonMessage = message.toJSON();
-    publishMessage(pub_topic_status.c_str(), jsonMessage.c_str());
+  if (!isMQTTConnected()) {
+    return;
   }
+  // 创建心跳消息
+  MQTTMessage message = createHeartbeatMessage();
+  
+  // 添加额外的系统信息
+  String systemInfo = "uptime:" + String(millis() / 1000) + 
+                    ",wifi_rssi:" + String(WiFi.RSSI()) + 
+                    ",free_heap:" + String(ESP.getFreeHeap());
+  message.setValue(systemInfo);
+  
+  String jsonMessage = message.toJSON();
+  publishMessage(pub_topic_status.c_str(), jsonMessage.c_str());
+  
 }
+#endif

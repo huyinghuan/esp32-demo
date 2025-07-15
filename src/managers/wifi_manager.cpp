@@ -8,7 +8,7 @@
 // WiFi状态变量
 unsigned long lastWiFiCheck = 0;
 unsigned long lastWiFiActivity = 0;
-bool wifiPowerSaveEnabled = false;
+bool wifiPowerSaveEnabled = POWER_SAVE_MODE;
 wifi_power_mode_t currentWiFiPowerMode = WIFI_POWER_FULL;
 
 // WiFi空闲超时时间（毫秒）
@@ -18,10 +18,6 @@ const unsigned long WIFI_SLEEP_DURATION = 60000; // 1分钟睡眠
 void initWiFi() {
   Serial.println("初始化WiFi...");
   WiFi.mode(WIFI_STA);
-  
-  // 启用节能模式
-  enableWiFiPowerSave();
-  
   connectToWiFi();
 }
 
@@ -139,35 +135,6 @@ void wifiWakeup() {
     Serial.println("WiFi从睡眠模式唤醒");
     WiFi.mode(WIFI_STA);
     connectToWiFi();
-  }
-}
-
-// 智能WiFi管理 - 根据使用情况自动调整功耗
-void smartWiFiManagement() {
-  unsigned long currentTime = millis();
-  
-  // 如果WiFi空闲时间过长，切换到睡眠模式
-  if (isWiFiConnected() && wifiPowerSaveEnabled) {
-    if (currentTime - lastWiFiActivity > WIFI_IDLE_TIMEOUT) {
-      Serial.println("WiFi空闲时间过长，进入睡眠模式");
-      wifiSleep();
-      
-      // 安排唤醒时间
-      scheduleWiFiWakeup(WIFI_SLEEP_DURATION);
-    }
-  }
-}
-
-// 安排WiFi唤醒
-void scheduleWiFiWakeup(unsigned long intervalMs) {
-  // 这里可以使用定时器或者在主循环中检查时间来实现
-  // 为简单起见，我们在这里设置一个标记
-  static unsigned long wakeupTime = 0;
-  wakeupTime = millis() + intervalMs;
-  
-  // 在主循环中检查是否到了唤醒时间
-  if (millis() >= wakeupTime && currentWiFiPowerMode == WIFI_POWER_OFF) {
-    wifiWakeup();
   }
 }
 

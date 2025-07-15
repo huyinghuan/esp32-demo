@@ -10,5 +10,5 @@
 #include "heartbeat_manager.h"
 #include "bluetooth_manage.h"
 #include "esp32_power_mgr.h"
-
+#include "command.h"
 #endif

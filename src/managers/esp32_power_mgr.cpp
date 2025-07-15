@@ -1,32 +1,28 @@
 #include "esp32_power_mgr.h"
 #include "../config.h"
 #include "../devices/led.h"
+#include <devices/screen.h>
 
 // 电源状态变量
 unsigned long esp32LastActivity = 0;
 esp32_power_mode_t esp32CurrentPowerMode = ESP32_ACTIVE;
-bool esp32PowerSaveEnabled = true;
 
 // 配置常量
-const unsigned long ESP32_DEEP_SLEEP_THRESHOLD = 600000;    // 10分钟无活动进入深度睡眠
-const unsigned long ESP32_LIGHT_SLEEP_THRESHOLD = 60000;    // 1分钟无活动进入轻度睡眠
+const unsigned long ESP32_DEEP_SLEEP_THRESHOLD = 10*60*1000;    // 10分钟无活动进入深度睡眠
+const unsigned long ESP32_LIGHT_SLEEP_THRESHOLD = 1*60*1000;    // 1分钟无活动进入轻度睡眠
 const uint64_t ESP32_DEFAULT_SLEEP_TIME = 30 * 1000000;     // 默认睡眠30秒
+const uint64_t ESP32_LIGHT_SLEEP_TIME = 5 * 1000000; // 轻度睡眠5秒
 
+//初始化ESP32电源管理器
 void initESP32PowerManager() {
-  Serial.println("初始化ESP32电源管理器...");
-  
   esp32LastActivity = millis();
   esp32CurrentPowerMode = ESP32_ACTIVE;
-  
-  // 设置CPU频率为较低值以节省功耗
-  if (esp32PowerSaveEnabled) {
-    setESP32CPUFrequency(80); // 设置为80MHz，默认是240MHz
-  }
-  
-  Serial.println("ESP32电源管理器初始化完成");
 }
 
 void enterESP32DeepSleep(uint64_t sleepTimeUs) {
+  if (sleepTimeUs == 0) {
+    sleepTimeUs = ESP32_DEFAULT_SLEEP_TIME; // 默认30秒
+  }
   Serial.println("准备进入深度睡眠模式...");
   Serial.print("睡眠时间: ");
   Serial.print(sleepTimeUs / 1000000);
@@ -42,12 +38,20 @@ void enterESP32DeepSleep(uint64_t sleepTimeUs) {
   Serial.flush(); // 确保串口输出完成
   
   esp32CurrentPowerMode = ESP32_DEEP_SLEEP;
+
+  #if SCREEN_SSD1306_ENABLED
+  // 如果启用了屏幕，关闭屏幕显示
+  screenSleep();
+  #endif
+
   esp_deep_sleep_start();
 }
 
 void enterESP32LightSleep(uint64_t sleepTimeUs) {
   Serial.println("进入轻度睡眠模式...");
-  
+  if(sleepTimeUs == 0) {
+    sleepTimeUs = ESP32_LIGHT_SLEEP_THRESHOLD; // 默认30秒
+  }
   // 配置唤醒源
   setupESP32WakeupTimer(sleepTimeUs);
   
@@ -106,17 +110,15 @@ void disableESP32CPUPowerSave() {
 }
 
 void smartESP32PowerManagement() {
-  if (!esp32PowerSaveEnabled) return;
   
   unsigned long idleTime = getESP32IdleTime();
-  
   // 根据空闲时间决定电源管理策略
   if (shouldEnterESP32DeepSleep()) {
     Serial.println("检测到长时间空闲，准备进入深度睡眠");
     enterESP32DeepSleep(ESP32_DEFAULT_SLEEP_TIME);
   } else if (idleTime > ESP32_LIGHT_SLEEP_THRESHOLD && esp32CurrentPowerMode == ESP32_ACTIVE) {
     Serial.println("检测到短期空闲，进入轻度睡眠");
-    enterESP32LightSleep(5 * 1000000); // 5秒轻度睡眠
+    enterESP32LightSleep(ESP32_LIGHT_SLEEP_TIME); // 5秒轻度睡眠
   }
 }
 
@@ -129,7 +131,7 @@ bool shouldEnterESP32DeepSleep() {
   // 3. WiFi和MQTT连接稳定或不需要
   
   return (idleTime > ESP32_DEEP_SLEEP_THRESHOLD) && 
-         (esp32CurrentPowerMode == ESP32_ACTIVE);
+        (esp32CurrentPowerMode == ESP32_ACTIVE);
 }
 
 unsigned long getESP32IdleTime() {

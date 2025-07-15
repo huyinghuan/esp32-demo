@@ -125,4 +125,10 @@ void handleCommand(String command) {
 //   }
 }
 
+#else
+
+bool isMQTTConnected(){
+  return false;
+}
+void publishMessage(const char* topic, const char* message){}
 #endif

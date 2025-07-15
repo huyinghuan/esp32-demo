@@ -1,12 +1,12 @@
 #include "screen.h"
 #include <managers/device_id_manager.h>
+#include "../config.h"
 
+#if SCREEN_SSD1306_ENABLED
 // 定义全局display对象
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // 定义U8g2对象用于中文显示
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-
-
 
 void initScreen() {
     // 初始化传统 Adafruit SSD1306
@@ -55,3 +55,89 @@ void initScreen() {
     
     u8g2.sendBuffer(); // 发送缓冲区内容到屏幕
 }
+
+
+// 软件关闭屏幕显示，保持I2C连接活跃，功耗最低
+void turnOffScreen() {
+    // 清除显示内容
+    display.clearDisplay();
+    display.display();
+    
+    // 发送显示关闭命令到SSD1306
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    
+    // 清除U8g2缓冲区
+    u8g2.clearBuffer();
+    u8g2.sendBuffer();
+    
+    Serial.println("屏幕显示已关闭");
+}
+
+// 重新开启屏幕显示
+void turnOnScreen() {
+    // 发送显示开启命令到SSD1306  
+    display.ssd1306_command(SSD1306_DISPLAYON);
+    
+    // 刷新显示内容
+    display.clearDisplay();
+    display.display();
+    
+    Serial.println("屏幕显示已开启");
+}
+
+// 设置屏幕亮度 (0-255)
+void setScreenBrightness(uint8_t brightness) {
+    // SSD1306支持亮度调节，亮度越低功耗越小
+    display.ssd1306_command(SSD1306_SETCONTRAST);
+    display.ssd1306_command(brightness);
+    
+    Serial.print("屏幕亮度设置为: ");
+    Serial.println(brightness);
+}
+
+// 屏幕进入深度睡眠模式 - 最大程度省电
+void screenSleep() {
+    // 先关闭显示
+    turnOffScreen();
+    
+    // 进入睡眠模式，几乎停止所有功能
+    display.ssd1306_command(SSD1306_DISPLAYOFF);
+    display.ssd1306_command(0x8E); // 关闭电荷泵
+    
+    Serial.println("屏幕进入深度睡眠");
+}
+
+// 从睡眠模式唤醒屏幕
+void screenWakeup() {
+    // 重新启用电荷泵
+    display.ssd1306_command(0x8F); // 开启电荷泵
+    
+    // 重新初始化显示
+    display.ssd1306_command(SSD1306_DISPLAYON);
+    
+    // 清除并刷新显示
+    display.clearDisplay(); 
+    display.display();
+    
+    Serial.println("屏幕从睡眠模式唤醒");
+}
+
+// 便捷的文本显示函数
+void displayText(String text, int x, int y) {
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB08_tf);
+    u8g2.setCursor(x, y);
+    u8g2.print(text);
+    u8g2.sendBuffer();
+}
+#else
+
+void initScreen(){}
+// 省电相关函数
+void turnOffScreen(){};         // 软件关闭显示
+void turnOnScreen(){};          // 重新开启显示
+void setScreenBrightness(uint8_t brightness){}; // 设置亮度 (0-255)
+void screenSleep(){};           // 进入睡眠模式  
+void screenWakeup(){};          // 从睡眠模式唤醒
+void displayText(String text, int x = 0, int y = 15){}; // 显示文本的便捷函数
+#endif

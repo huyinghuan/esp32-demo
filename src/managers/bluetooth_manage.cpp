@@ -8,7 +8,6 @@
 unsigned long lastBluetoothCheck = 0;
 bool bluetoothInitialized = false;
 bool bluetoothConnected = false;
-bool bluetoothEnabled = BLUETOOTH_ENABLED_BY_DEFAULT;  // 根据配置决定默认状态
 
 // BluetoothSerial 对象
 BluetoothSerial SerialBT;
@@ -16,27 +15,8 @@ BluetoothSerial SerialBT;
 // 蓝牙设备名称
 String bluetoothDeviceName;
 
-void initBluetoothIfEnabled() {
-    if (bluetoothEnabled) {
-        Serial.println("Bluetooth is enabled by configuration");
-        initBluetooth();
-    } else {
-        Serial.println("Bluetooth is disabled by default to save power");
-        Serial.println("Use enableBluetooth() to manually enable it later");
-        
-        // 确保蓝牙完全禁用以节省功耗
-        disableBluetooth();
-    }
-}
-
 void initBluetooth() {
-    if (!bluetoothEnabled) {
-        Serial.println("Cannot initialize: Bluetooth is disabled");
-        return;
-    }
-    
     Serial.println("Initializing Bluetooth...");
-    
     // 构建设备名称
     bluetoothDeviceName = "ESP32-Device-" + getDeviceIDString();
     
@@ -53,40 +33,17 @@ void initBluetooth() {
     Serial.println("The device started, now you can pair it with bluetooth!");
 }
 
-bool isBluetoothEnabled() {
-    return bluetoothEnabled;
-}
-
-void enableBluetooth() {
-    if (!bluetoothEnabled) {
-        Serial.println("Enabling Bluetooth...");
-        bluetoothEnabled = true;
-        initBluetooth();
-    } else {
-        Serial.println("Bluetooth is already enabled");
-    }
-}
-
 void disableBluetooth() {
     Serial.println("Disabling Bluetooth to save power...");
-    
     // 停止蓝牙服务
     stopBluetooth();
-    
     // 禁用蓝牙控制器以节省更多功耗
     esp_bt_controller_disable();
     esp_bt_controller_deinit();
-    
-    bluetoothEnabled = false;
     Serial.println("Bluetooth disabled successfully - power consumption reduced");
 }
 
 void checkBluetoothConnection() {
-    // 如果蓝牙被禁用，跳过检查以节省CPU资源
-    if (!bluetoothEnabled) {
-        return;
-    }
-    
     unsigned long currentTime = millis();
     
     // 每5秒检查一次蓝牙连接状态
@@ -138,11 +95,6 @@ void restartBluetooth() {
 
 
 void sendBluetoothMessage(const String& message) {
-    if (!bluetoothEnabled) {
-        Serial.println("Cannot send message: Bluetooth is disabled");
-        return;
-    }
-    
     if (bluetoothInitialized && bluetoothConnected) {
         SerialBT.println(message);
         Serial.print("Sent via Bluetooth: ");
@@ -154,43 +106,57 @@ void sendBluetoothMessage(const String& message) {
 
 void printBluetoothInfo() {
     Serial.println("=== Bluetooth Status ===");
-    Serial.print("Enabled: ");
-    Serial.println(bluetoothEnabled ? "Yes" : "No (Power Save)");
     Serial.print("Initialized: ");
     Serial.println(bluetoothInitialized ? "Yes" : "No");
     Serial.print("Connected: ");
     Serial.println(bluetoothConnected ? "Yes" : "No");
-    
-    if (bluetoothEnabled && bluetoothInitialized) {
+    if (bluetoothInitialized) {
         Serial.print("Device Name: ");
         Serial.println(bluetoothDeviceName);
     }
-    
     Serial.println("======================");
 }
 
 
 void handleBluetoothData() {
     // 检查是否有蓝牙数据可读
-    if (SerialBT.available()) {
-        String receivedData = SerialBT.readString();
-        receivedData.trim(); // 移除首尾空白字符
-        
-        Serial.print("Received via Bluetooth: ");
-        Serial.println(receivedData);
-        
-        // 这里可以添加更复杂的数据处理逻辑
-        // 例如：解析命令、处理JSON数据等
-        
-        // 简单的回显功能
-        SerialBT.print("Echo: ");
-        SerialBT.println(receivedData);
-        
-        // 可以在这里添加其他处理逻辑，比如：
-        // - 解析特定命令
-        // - 转发到MQTT
-        // - 控制设备状态等
+    if (!SerialBT.available()) {
+        return; // 没有数据可读，直接返回
     }
+    String receivedData = SerialBT.readString();
+    receivedData.trim(); // 移除首尾空白字符
+    
+    Serial.print("Received via Bluetooth: ");
+    Serial.println(receivedData);
+    
+    // 这里可以添加更复杂的数据处理逻辑
+    // 例如：解析命令、处理JSON数据等
+    
+    // 简单的回显功能
+    SerialBT.print("Echo: ");
+    SerialBT.println(receivedData);
+    
+    // 可以在这里添加其他处理逻辑，比如：
+    // - 解析特定命令
+    // - 转发到MQTT
+    // - 控制设备状态等
 }
 
+#else
+void initBluetooth() {}
+void checkBluetoothConnection() {}
+bool isBluetoothConnected() {
+    return false; // 蓝牙未启用时返回false
+}
+void stopBluetooth() {}
+void restartBluetooth() {}
+void sendBluetoothMessage(const String& message) {
+    Serial.println("Cannot send Bluetooth message: Bluetooth is disabled.");
+}
+void printBluetoothInfo() {
+    Serial.println("Bluetooth is disabled by configuration.");
+}
+void handleBluetoothData() {
+    // 蓝牙未启用时不需要处理数据
+}
 #endif

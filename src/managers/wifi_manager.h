@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#define POWER_SAVE_MODE WIFI_POWER_SAVE_ENABLED
 // WiFi功耗模式枚举
 typedef enum {
   WIFI_POWER_FULL,      // 全功率模式
@@ -24,10 +25,6 @@ void enableWiFiPowerSave();
 void disableWiFiPowerSave();
 void wifiSleep();
 void wifiWakeup();
-
-// 智能WiFi管理
-void smartWiFiManagement();
-void scheduleWiFiWakeup(unsigned long intervalMs);
 
 // WiFi状态变量
 extern unsigned long lastWiFiCheck;
