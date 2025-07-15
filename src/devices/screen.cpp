@@ -1,9 +1,12 @@
 #include "screen.h"
+#include <managers/device_id_manager.h>
 
 // 定义全局display对象
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // 定义U8g2对象用于中文显示
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
+
 
 void initScreen() {
     // 初始化传统 Adafruit SSD1306
@@ -17,50 +20,38 @@ void initScreen() {
         // 4. 无限循环确保系统停在可预测的安全状态，便于调试
         for (;;); // 不继续执行
     }
-    
+    display.clearDisplay();
     // 初始化 U8g2（用于中文显示）
     u8g2.begin();
     u8g2.enableUTF8Print();  // 启用UTF8支持
     
-    display.clearDisplay();
     
-    // 使用U8g2显示中文和英文
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_wqy12_t_chinese3);  // 使用支持中文的字体
-    u8g2.setCursor(0, 15);
-    u8g2.print("你好，ESP32！");
-    u8g2.setCursor(0, 35);
-    u8g2.setFont(u8g2_font_ncenB08_tr);  // 英文字体
-    u8g2.print("Hello OLED!");
-    u8g2.sendBuffer();
-}
+    // U8g2 的字体名称中包含了尺寸信息，格式通常是：u8g2_font_[字体名]_[尺寸]_[字符集]
+    // 字符集有 常见的如：chinese1 基础中文字符集, chinese2 扩展中文字符集, chinese3 更大字符集
+    // 完整字符集: gb2312, gb2312a, gb2312b, 除非有必要显示很多中文，不建议使用更大的字符集，会增加flash占用
+    // 纯英文字符集: u8g2_font_ncenB08_tf 比gb2312a小很多 falsh占用shao 20%，
+    // 优化建议 如果要显示中文字符建议直行定制字库，只将需要的字符包含在内，减少不必要的字符集
+    // 12号字体 Cursor Y = 15
+    // 14号字体 Cursor Y = 18 width = 10.66  只能显示12个字符
+    u8g2.clearBuffer(); // 清除U8g2缓冲区
+    
+    // 先尝试最基础的中文字体
+    // u8g2.setFont(u8g2_font_wqy12_t_gb2312a); // 基础中文字符集
+    
+    // u8g2.setCursor(0, 15); // 设置光标位置
+    // u8g2.print("ESP32"); // 先测试英文
+    // 先尝试最基础的中文字体
+    u8g2.setFont(u8g2_font_ncenB12_tf); // 基础中文字符集
+    u8g2.setCursor(0, 15); // 第二行
+    u8g2.print("Device: "+getDeviceIDString()); // 尝试其他常见中文字符
+    // // 如果"欢迎"不显示，尝试用其他常见字符
 
-void displayChineseText(const char* text, int x, int y) {
-    u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_wqy12_t_chinese3);
-    u8g2.setCursor(x, y);
-    u8g2.print(text);
-    u8g2.sendBuffer();
-}
-
-void displayMixedText(const char* line1, const char* line2, const char* line3) {
-    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB08_tf); // 基础中文字符集
+    u8g2.setCursor(30, 40); // 第二行
+    u8g2.print("starting..."); // 尝试其他常见中文字符
     
-    // 第一行 - 中文字体
-    u8g2.setFont(u8g2_font_wqy12_t_chinese3);
-    u8g2.setCursor(0, 15);
-    u8g2.print(line1);
+    // u8g2.setCursor(0, 45); // 第三行
+    // u8g2.print("Hello World"); // 英文备用方案
     
-    // 第二行 - 英文字体
-    u8g2.setFont(u8g2_font_ncenB08_tr);
-    u8g2.setCursor(0, 35);
-    u8g2.print(line2);
-    
-    // 第三行（可选）
-    if (line3 != nullptr) {
-        u8g2.setCursor(0, 50);
-        u8g2.print(line3);
-    }
-    
-    u8g2.sendBuffer();
+    u8g2.sendBuffer(); // 发送缓冲区内容到屏幕
 }

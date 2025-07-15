@@ -34,8 +34,6 @@ MQTTMessage& MQTTMessage::setEventType(const String& type) {
   return *this;
 }
 
-
-
 MQTTMessage& MQTTMessage::setSensor(const String& sen) {
   sensor = sen;
   return *this;

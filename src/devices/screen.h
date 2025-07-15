@@ -18,7 +18,6 @@ extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
 
 // 屏幕管理函数
 void initScreen();
-void displayChineseText(const char* text, int x = 0, int y = 16);
-void displayMixedText(const char* line1, const char* line2, const char* line3 = nullptr);
+
 
 #endif

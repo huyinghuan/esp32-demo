@@ -59,10 +59,11 @@ void setup() {
   initScreen();
   
   // 初始化各个模块
-  initWiFi();
-  initMQTT();
-  initHeartbeat();
-  initButton();
+  // 暂时不需要的模块注释
+  // initWiFi(); // 初始化WiFi
+  // initMQTT(); // 初始化MQTT
+  // initHeartbeat(); // 初始化心跳
+  // initButton(); // 初始化按钮
   
   // 显示设备信息
   Serial.println("\n=== 设备信息 ===");
@@ -72,17 +73,17 @@ void setup() {
 
 void loop() {
   // 检查各个连接状态
-  checkWiFiConnection();
-  checkMQTTConnection();
+  // checkWiFiConnection();
+  // checkMQTTConnection();
   
   // 处理MQTT消息
-  handleMQTTLoop();
+  // handleMQTTLoop();
   
   // 检查按钮状态
-  checkButton();
+  // checkButton();
   
   // 发送心跳
-  checkHeartbeat();
+  // checkHeartbeat();
   
   // 处理串口命令
   handleSerialCommand();
