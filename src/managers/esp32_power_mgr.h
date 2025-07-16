@@ -4,26 +4,34 @@
 #include <Arduino.h>
 #include "esp_sleep.h"
 #include "driver/rtc_io.h"
+#include "driver/gpio.h"
+#include "driver/uart.h"
 
 // ESP32电源管理模式
 typedef enum {
   ESP32_ACTIVE,         // 活跃模式
   ESP32_LIGHT_SLEEP,    // 轻度睡眠
   ESP32_DEEP_SLEEP,     // 深度睡眠
-  ESP32_HIBERNATION     // 休眠模式
 } esp32_power_mode_t;
 
+typedef void (*RunOnLightSleep)(); // 轻度睡眠函数类型
+typedef void (*RunOnDeepSleep)(); // 深度睡眠函数类型
+
+void setSleepCallback(RunOnDeepSleep cb1, RunOnLightSleep cb2);
+
 // 电源管理函数
-void initESP32PowerManager();
-void enterESP32DeepSleep(uint64_t sleepTimeUs);
-void enterESP32LightSleep(uint64_t sleepTimeUs);
-void setupESP32WakeupTimer(uint64_t sleepTimeUs);
+void initESP32PowerManager(RunOnDeepSleep cb1, RunOnLightSleep cb2);
+void enterDeepSleep(uint64_t sleepTimeUs);
+void enterLightSleep(uint64_t sleepTimeUs);
+// void enterESP32LightSleepWithWakeup(uint64_t sleepTimeUs, bool enableGPIO, gpio_num_t gpio_pin, bool enableUART, bool enableWiFi);
+// void setupESP32WakeupTimer(uint64_t sleepTimeUs);
+// void setupESP32GPIOWakeup(gpio_num_t gpio_pin, int level);
+// void setupESP32UARTWakeup(uart_port_t uart_num, int threshold);
+// void setupESP32WiFiWakeup();
+// void setupESP32BluetoothWakeup();
 void printESP32WakeupReason();
 
-// CPU频率管理
-void setESP32CPUFrequency(uint32_t freq);
-void enableESP32CPUPowerSave();
-void disableESP32CPUPowerSave();
+
 
 // 智能电源管理
 void smartESP32PowerManagement();

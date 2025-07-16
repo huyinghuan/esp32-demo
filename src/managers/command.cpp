@@ -27,7 +27,7 @@ void handleSerialCommand() {
         Serial.println("GET_ID      - 获取当前设备ID");
         Serial.println("HELP        - 显示帮助信息");
     }else if (command == "SLEEP"){
-        enterESP32DeepSleep(0); // 立即进入深度睡眠
+        enterDeepSleep(0); // 立即进入深度睡眠
     } else {
         Serial.println("未知命令，请输入HELP获取帮助:"+command);
     }
