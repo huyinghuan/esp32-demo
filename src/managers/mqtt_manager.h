@@ -11,7 +11,7 @@ void connectToMQTT();
 void checkMQTTConnection();
 void handleMQTTLoop();
 bool isMQTTConnected();
-void publishMessage(const char* topic, const char* message);
+bool publishMessage(const char* topic, const char* message);
 void publishStatus(const char* status);
 
 // MQTT回调函数

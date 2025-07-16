@@ -30,7 +30,7 @@ void checkButton() {
   if (lastButtonState == HIGH && currentState == LOW) {
     buttonPressed = true;
     lastDebounceTime = millis();
-    Serial.println("Button pressed down");
+    //Serial.println("Button pressed down");
   }
   
   // 检测按钮从低电平变为高电平（松开）
@@ -40,7 +40,7 @@ void checkButton() {
       buttonPressed = false;
       lastButtonPressTime = millis();
       
-      Serial.print("Button pressed up ");
+      //Serial.print("Button pressed up ");
       
       // 调用回调函数处理按钮按下事件
       if (buttonPressCallback != nullptr) {

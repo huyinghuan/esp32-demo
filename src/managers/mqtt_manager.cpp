@@ -24,6 +24,7 @@ void initMQTT() {
 
 void connectToMQTT() {
   if (!isWiFiConnected()) {
+    Serial.print("wifi未连接 ");
     return;
   }
   
@@ -71,17 +72,11 @@ bool isMQTTConnected() {
   return client.connected();
 }
 
-void publishMessage(const char* topic, const char* message) {
-  if (client.connected()) {
-    if (client.publish(topic, message)) {
-      Serial.print("发布消息到 ");
-      Serial.print(topic);
-      Serial.print(": ");
-      Serial.println(message);
-    } else {
-      Serial.println("消息发布失败");
-    }
+bool publishMessage(const char* topic, const char* message) {
+  if (!client.connected()) {
+    return false;
   }
+  return client.publish(topic, message);
 }
 
 void publishStatus(const char* status) {

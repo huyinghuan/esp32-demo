@@ -4,11 +4,12 @@
 // ==================== 设备功能启用配置 ====================
 
 #define BLUETOOTH_ENABLED false     // 是否启用蓝牙 设置为 false 可节省约 20-30mA 功耗// WiFi配置
-#define WIFI_ENABLED false            // 是否启用WiFi
-#define MQTT_ENABLED false           // 是否启用MQTT
+#define WIFI_ENABLED true            // 是否启用WiFi
 #define SCREEN_SSD1306_ENABLED true // 是否启用OLED屏幕
 
 #define WIFI_POWER_SAVE_ENABLED false // 是否启用WiFi节能模式
+
+#define MQTT_ENABLED true           // 是否启用MQTT
 
 // 电源管理配置
 #define POWER_MANAGEMENT_ENABLED true  // 是否启用电源管理

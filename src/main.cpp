@@ -33,17 +33,22 @@ const unsigned long debounceDelay = 50;
 // 按钮按下事件处理函数
 void onButtonPressed() {
   Serial.println("处理按钮按下事件");
-  
+  updateESP32Activity(); // 更新ESP32活动状态
   #if WIFI_ENABLED && MQTT_ENABLED
-  if (isMQTTConnected()) {
-    // 使用统一的消息结构
-    MQTTMessage message = createButtonMessage("pressed");
-    String jsonMessage = message.toJSON();
-    
-    publishMessage(pub_topic_sensor.c_str(), jsonMessage.c_str());
-    Serial.println("MQTT消息发送成功: " + jsonMessage);
-  } else {
+  if (!isMQTTConnected()) {
     Serial.println("MQTT未连接，无法发送消息");
+    connectToMQTT(); // 尝试连接MQTT
+    return;
+  }
+  // 使用统一的消息结构
+  MQTTMessage message = createButtonMessage("pressed");
+  String jsonMessage = message.toJSON();
+  
+  bool ok = publishMessage(pub_topic_sensor.c_str(), jsonMessage.c_str());
+  if(ok){
+    Serial.println("MQTT消息发送成功: " +pub_topic_sensor + jsonMessage);
+  }else{
+    Serial.println("MQTT消息发送失败" +pub_topic_sensor + jsonMessage);
   }
   #else
   Serial.println("MQTT功能未启用");

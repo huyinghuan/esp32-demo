@@ -22,6 +22,10 @@ void initWiFi() {
 }
 
 void connectToWiFi() {
+  if(isWiFiConnected()) {
+    Serial.println("WiFi已连接，无需重新连接");
+    return;
+  }
   Serial.print("正在连接WiFi: ");
   Serial.println(ssid);
   
@@ -49,9 +53,9 @@ void connectToWiFi() {
     lastWiFiActivity = millis();
     
     // 连接成功后切换到节能模式
-    if (wifiPowerSaveEnabled) {
-      setWiFiPowerMode(WIFI_POWER_MODEM);
-    }
+    // if (wifiPowerSaveEnabled) {
+    //   setWiFiPowerMode(WIFI_POWER_MODEM);
+    // }
   } else {
     Serial.println();
     Serial.println("WiFi连接失败!");
@@ -137,5 +141,8 @@ void wifiWakeup() {
     connectToWiFi();
   }
 }
-
+#else
+void checkWiFiConnection() {
+  Serial.println("WiFi未启用，跳过WiFi连接检查");
+}
 #endif
