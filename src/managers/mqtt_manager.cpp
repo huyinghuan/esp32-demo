@@ -74,9 +74,18 @@ bool isMQTTConnected() {
 
 bool publishMessage(const char* topic, const char* message) {
   if (!client.connected()) {
+    Serial.println("MQTT未连接，无法发布消息");
     return false;
   }
-  return client.publish(topic, message);
+  if (client.publish(topic, message)) {
+    Serial.print("发布消息到 ");
+    Serial.print(topic);
+    Serial.print(": ");
+    Serial.println(message);
+    return  true;
+  } 
+  Serial.println("消息发布失败");
+  return false;
 }
 
 void publishStatus(const char* status) {
@@ -125,5 +134,6 @@ void handleCommand(String command) {
 bool isMQTTConnected(){
   return false;
 }
-void publishMessage(const char* topic, const char* message){}
+bool publishMessage(const char* topic, const char* message){return false;}
+
 #endif

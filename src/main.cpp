@@ -6,6 +6,7 @@
 #include "devices/led.h"
 #include "messages/messages.h"
 #include "devices/screen.h"
+#include "handles/handle.h"
 
 // 配置变量定义（从secrets.h获取）
 const char* ssid = WIFI_SSID;
@@ -28,32 +29,6 @@ const int ledPin = 2;
 const unsigned long wifiCheckInterval = 5000;
 const unsigned long mqttCheckInterval = 1000;
 const unsigned long heartbeatInterval = 30000;
-const unsigned long debounceDelay = 50;
-
-// 按钮按下事件处理函数
-void onButtonPressed() {
-  Serial.println("处理按钮按下事件");
-  updateESP32Activity(); // 更新ESP32活动状态
-  #if WIFI_ENABLED && MQTT_ENABLED
-  if (!isMQTTConnected()) {
-    Serial.println("MQTT未连接，无法发送消息");
-    connectToMQTT(); // 尝试连接MQTT
-    return;
-  }
-  // 使用统一的消息结构
-  MQTTMessage message = createButtonMessage("pressed");
-  String jsonMessage = message.toJSON();
-  
-  bool ok = publishMessage(pub_topic_sensor.c_str(), jsonMessage.c_str());
-  if(ok){
-    Serial.println("MQTT消息发送成功: " +pub_topic_sensor + jsonMessage);
-  }else{
-    Serial.println("MQTT消息发送失败" +pub_topic_sensor + jsonMessage);
-  }
-  #else
-  Serial.println("MQTT功能未启用");
-  #endif
-}
 
 // 初始化设备主题
 void initDeviceTopics() {
@@ -82,11 +57,13 @@ void setup() {
   
   // 初始化电源管理器
   #if POWER_MANAGEMENT_ENABLED
-  initESP32PowerManager(); // 默认进入省电模式
+  // initESP32PowerManager(); // 默认进入省电模式
   #endif
   
-  // 初始化设备ID和主题
+  // 初始化设备ID
   initDeviceID();
+  // 初始化设备主题
+  // initDeviceTopics();
   
   // 配置GPIO
   initLED(ledPin);
@@ -98,16 +75,15 @@ void setup() {
   #endif
   
   #if WIFI_ENABLED  && MQTT_ENABLED
-  initDeviceTopics();
   initMQTT(); // 初始化MQTT
   initHeartbeat(); // 初始化心跳
   #endif
 
   // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
-  initBluetooth();
-
-
-  initButton(onButtonPressed); // 初始化按钮  设置按钮按下回调函数
+  // initBluetooth();
+  
+  // Checked OK
+  //initButton(buttonPin, onButtonPressed); // 初始化按钮  设置按钮按下回调函数
   
   // 显示设备信息
   Serial.println("\n=== 设备信息 ===");
