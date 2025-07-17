@@ -6,6 +6,7 @@
 #include "messages/messages.h"
 #include "devices/screen.h"
 #include "handles/handle.h"
+#include "output/status_manager.h"
 
 // 基于设备ID和主题
 // String pub_topic_button_press;
@@ -84,8 +85,7 @@ void loop() {
   // 检查各个连接状态
   checkWiFiConnection();
 
-  //clearScreen();
-  addText("wifi: "+ getIP() + " " + String(getWifiSignal()), 0, 30);
+  printStatusToScreen(); // 打印状态到屏幕
 
   // checkMQTTConnection();
   
