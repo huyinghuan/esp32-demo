@@ -1,7 +1,6 @@
 #include "button.h"
 #include "led.h"
 #include "screen.h"  // 添加screen头文件
-#include "../config.h"
 
 // 按钮状态变量（模块内部私有）
 static bool buttonPressed = false;
@@ -12,7 +11,11 @@ static unsigned long lastButtonPressTime = 0;
 // 按钮按下事件回调函数指针
 static ButtonPressCallback buttonPressCallback = nullptr;
 
-void initButton(ButtonPressCallback callback) {
+int _buttonPin = 0;
+const unsigned long debounceDelay = 50;
+
+void initButton(int buttonPin, ButtonPressCallback callback) {
+  _buttonPin = buttonPin;
   buttonPressCallback = callback;
   pinMode(buttonPin, INPUT_PULLUP);
   buttonPressed = false;
@@ -24,7 +27,7 @@ void initButton(ButtonPressCallback callback) {
 }
 
 void checkButton() {
-  int currentState = digitalRead(buttonPin);
+  int currentState = digitalRead(_buttonPin);
   
   // 检测按钮从高电平变为低电平（按下）
   if (lastButtonState == HIGH && currentState == LOW) {
@@ -46,9 +49,6 @@ void checkButton() {
       if (buttonPressCallback != nullptr) {
         buttonPressCallback();
       }
-      
-      // LED闪烁表示按钮按下
-      blinkLED(ledPin, 1, 100);
     }
   }
   
