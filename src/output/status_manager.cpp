@@ -6,10 +6,21 @@
 
 static String wifiIP = ""; // WiFi IP地址
 static int wifiSignal = 0; // WiFi信号强度
+static bool showingStatus = true; // 是否显示状态信息
 
 static unsigned long previousMillis = 0;
 const unsigned long checkInterval = 5000; // 状态检查间隔时间（毫秒）
+void setShowingStatus(bool show) {
+    showingStatus = show;
+    if(show){
+        previousMillis = 0; // 重置计时器
+        printStatusToScreen();
+    }
+}
 void printStatusToScreen(){
+    if (!showingStatus) {
+        return; // 如果不需要显示状态信息，直接返回
+    }
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis < checkInterval) {
         return;
