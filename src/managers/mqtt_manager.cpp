@@ -1,10 +1,18 @@
 #include "mqtt_manager.h"
-#include "../config.h"
 #include "wifi_manager.h"
 #include "device_id_manager.h"
-#include "../devices/led.h"
+#include "../secrets.h"
+#include "../config.h"
 
+// 选择性编译降低flash占用和功耗
 #if WIFI_ENABLED && MQTT_ENABLED
+
+const char* mqtt_server = MQTT_SERVER;
+const int mqtt_port = MQTT_PORT;
+const char* mqtt_user = MQTT_USER;
+const char* mqtt_pass = MQTT_PASSWORD;
+
+const unsigned long mqttCheckInterval = 1000;
 
 // MQTT客户端
 WiFiClient espClient;
@@ -44,7 +52,7 @@ void connectToMQTT() {
     Serial.println(SUB_GLOBAL_TOPIC_COMMAND);
     
     // LED闪烁表示MQTT连接成功
-    blinkLED(ledPin, 3, 200);
+    // blinkLED(ledPin, 3, 200);
     
   } else {
     Serial.print("MQTT连接失败, 错误码: ");
@@ -130,7 +138,9 @@ void handleCommand(String command) {
 }
 
 #else
-
+void initMQTT() {
+  Serial.println("MQTT未启用，跳过初始化");
+}
 bool isMQTTConnected(){
   return false;
 }

@@ -1,21 +1,11 @@
 #include <Arduino.h>
 #include "config.h"
-#include "secrets.h"
 #include "managers/managers.h"
 #include "devices/button.h"
 #include "devices/led.h"
 #include "messages/messages.h"
 #include "devices/screen.h"
 #include "handles/handle.h"
-
-// 配置变量定义（从secrets.h获取）
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
-
-const char* mqtt_server = MQTT_SERVER;
-const int mqtt_port = MQTT_PORT;
-const char* mqtt_user = MQTT_USER;
-const char* mqtt_pass = MQTT_PASSWORD;
 
 // 基于设备ID和主题
 // String pub_topic_button_press;
@@ -26,9 +16,9 @@ String sub_topic_command;
 const int buttonPin = 14;
 const int ledPin = 2;
 
-const unsigned long wifiCheckInterval = 5000;
-const unsigned long mqttCheckInterval = 1000;
-const unsigned long heartbeatInterval = 30000;
+
+// void initDeviceTopics();
+// void handleSerialCommand();
 
 // 初始化设备主题
 void initDeviceTopics() {
@@ -38,22 +28,22 @@ void initDeviceTopics() {
   pub_topic_sensor = "esp32/" + String(deviceID) + "/sensor";
   sub_topic_command = "esp32/" + String(deviceID) + "/command";
   
-  Serial.println("设备主题初始化完成:");
-  //Serial.println("  按钮主题: " + pub_topic_button_press);
-  Serial.println("  状态主题: " + pub_topic_status);
-  Serial.println("  传感器主题: " + pub_topic_sensor);
-  Serial.println("  命令主题: " + sub_topic_command);
+  DEBUG_PRINTLN("设备主题初始化完成:");
+  //DEBUG_PRINTLN("  按钮主题: " + pub_topic_button_press);
+  DEBUG_PRINTLN("  状态主题: " + pub_topic_status);
+  DEBUG_PRINTLN("  传感器主题: " + pub_topic_sensor);
+  DEBUG_PRINTLN("  命令主题: " + sub_topic_command);
 }
 
 void setup() {
   // 初始化串口
   Serial.begin(115200);
-  Serial.println("ESP32 MQTT Button Client Starting...");
+  DEBUG_PRINTLN("ESP32 MQTT Button Client Starting...");
   
   // 检查唤醒原因（如果从睡眠中唤醒）
-  #if POWER_MANAGEMENT_ENABLED
-  printESP32WakeupReason();
-  #endif
+  // #if POWER_MANAGEMENT_ENABLED
+  // printESP32WakeupReason();
+  // #endif
   
   // 初始化电源管理器
   #if POWER_MANAGEMENT_ENABLED
@@ -69,15 +59,9 @@ void setup() {
   initLED(ledPin);
   initScreen();
   
-  // 初始化各个模块 选择性编译降低flash占用和功耗
-  #if WIFI_ENABLED
-  initWiFi(); // 初始化WiFi
-  #endif
+  initWiFi(WIFI_POWER_SAVE_ENABLED); // 初始化WiFi
   
-  #if WIFI_ENABLED  && MQTT_ENABLED
-  initMQTT(); // 初始化MQTT
-  initHeartbeat(); // 初始化心跳
-  #endif
+  // initMQTT(); // 初始化MQTT
 
   // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
   // initBluetooth();
@@ -86,19 +70,23 @@ void setup() {
   //initButton(buttonPin, onButtonPressed); // 初始化按钮  设置按钮按下回调函数
   
   // 显示设备信息
-  Serial.println("\n=== 设备信息 ===");
-  Serial.println("设备ID: " + getDeviceIDString());
-  Serial.println("===============\n");
+  DEBUG_PRINTLN("\n=== 设备信息 ===");
+  DEBUG_PRINTLN("设备ID: " + getDeviceIDString());
+  DEBUG_PRINTLN("===============\n");
 }
 
 void loop() {
   // 智能电源管理
-  #if SMART_POWER_SAVE_MODE
-  smartESP32PowerManagement();
-  #endif
+  // #if SMART_POWER_SAVE_MODE
+  // smartESP32PowerManagement();
+  // #endif
   
   // 检查各个连接状态
-  // checkWiFiConnection();
+  checkWiFiConnection();
+
+  //clearScreen();
+  addText("wifi: "+ getIP() + " " + String(getWifiSignal()), 0, 30);
+
   // checkMQTTConnection();
   
   // 检查蓝牙连接状态

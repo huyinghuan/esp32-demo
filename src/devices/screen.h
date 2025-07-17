@@ -25,5 +25,7 @@ void turnOnScreen();          // 重新开启显示
 void setScreenBrightness(uint8_t brightness); // 设置亮度 (0-255)
 void screenSleep();           // 进入睡眠模式  
 void screenWakeup();          // 从睡眠模式唤醒
-void displayText(String text, int x = 0, int y = 15); // 显示文本的便捷函数
+void displayText(String text, int x = 0, int y = 15); // 显示文本的便捷函数（清除屏幕）
+void addText(String text, int x = 0, int y = 15); // 在现有内容基础上添加文本
+void clearScreen(); // 清除屏幕内容
 #endif

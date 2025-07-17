@@ -14,10 +14,12 @@ typedef enum {
 } wifi_power_mode_t;
 
 // WiFi管理函数
-void initWiFi();
+void initWiFi(bool enableSaveMode);
 void connectToWiFi();
 void checkWiFiConnection();
 bool isWiFiConnected();
+bool isInCooldown(); // 检查是否在重试冷却期
+void resetWiFiRetryState(); // 重置WiFi重试状态（强制允许重新尝试）
 
 // WiFi功耗优化函数
 void setWiFiPowerMode(wifi_power_mode_t mode);
@@ -25,10 +27,10 @@ void enableWiFiPowerSave();
 void disableWiFiPowerSave();
 void wifiSleep();
 void wifiWakeup();
+int getWifiSignal(); // 获取WiFi信号强度等级 (0-4: 0=未连接, 1=很弱, 2=弱, 3=中等, 4=强)
+String getIP(); // 获取WiFi状态信息
 
 // WiFi状态变量
-extern unsigned long lastWiFiCheck;
-extern unsigned long lastWiFiActivity;
 extern bool wifiPowerSaveEnabled;
 extern wifi_power_mode_t currentWiFiPowerMode;
 

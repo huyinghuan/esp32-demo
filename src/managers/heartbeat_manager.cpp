@@ -1,5 +1,4 @@
 #include "heartbeat_manager.h"
-#include "../config.h"
 #include "mqtt_manager.h"
 #include "device_id_manager.h"
 #include "../messages/messages.h"
@@ -12,6 +11,8 @@ unsigned long lastHeartbeat = 0;
 void initHeartbeat() {
   lastHeartbeat = millis();
 }
+
+const unsigned long heartbeatInterval = 30000;
 
 void checkHeartbeat() {
   unsigned long currentTime = millis();

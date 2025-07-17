@@ -42,17 +42,8 @@ void initScreen() {
     // u8g2.print("ESP32"); // 先测试英文
     // 先尝试最基础的中文字体
     u8g2.setFont(u8g2_font_ncenB12_tf); // 基础中文字符集
-    u8g2.setCursor(0, 15); // 第二行
-    u8g2.print("Device: "+getDeviceIDString()); // 尝试其他常见中文字符
-    // // 如果"欢迎"不显示，尝试用其他常见字符
-
-    u8g2.setFont(u8g2_font_ncenB08_tf); // 基础中文字符集
-    u8g2.setCursor(30, 40); // 第二行
+    u8g2.setCursor(10, 15); // 第1行
     u8g2.print("starting..."); // 尝试其他常见中文字符
-    
-    // u8g2.setCursor(0, 45); // 第三行
-    // u8g2.print("Hello World"); // 英文备用方案
-    
     u8g2.sendBuffer(); // 发送缓冲区内容到屏幕
 }
 
@@ -122,12 +113,24 @@ void screenWakeup() {
     Serial.println("屏幕从睡眠模式唤醒");
 }
 
-// 便捷的文本显示函数
+// 便捷的文本显示函数（清除屏幕后显示）
 void displayText(String text, int x, int y) {
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB08_tf);
     u8g2.setCursor(x, y);
     u8g2.print(text);
+    u8g2.sendBuffer();
+}
+
+// 在现有内容基础上添加文本（不清除屏幕）
+void addText(String text, int x, int y) {
+    u8g2.setFont(u8g2_font_ncenB08_tf);
+    u8g2.setCursor(x, y);
+    u8g2.print(text);
+    u8g2.sendBuffer();
+}
+void clearScreen() {
+    u8g2.clearBuffer();
     u8g2.sendBuffer();
 }
 #else
@@ -140,4 +143,6 @@ void setScreenBrightness(uint8_t brightness){}; // 设置亮度 (0-255)
 void screenSleep(){};           // 进入睡眠模式  
 void screenWakeup(){};          // 从睡眠模式唤醒
 void displayText(String text, int x = 0, int y = 15){}; // 显示文本的便捷函数
+void addText(String text, int x = 0, int y = 15){}; // 在现有内容基础上添加文本
+void clearScreen(){}; // 清除屏幕内容
 #endif
