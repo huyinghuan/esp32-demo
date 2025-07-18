@@ -15,10 +15,6 @@ String sub_topic_command;
 const int buttonPin = 14;
 const int ledPin = 2;
 
-
-// void initDeviceTopics();
-// void handleSerialCommand();
-
 // 初始化设备主题
 void initDeviceTopics() {
   int deviceID = getDeviceID();
@@ -38,7 +34,6 @@ void setup() {
   // 初始化串口
   Serial.begin(115200);
   DEBUG_PRINTLN("ESP32 MQTT Button Client Starting...");
-  
   // 检查唤醒原因（如果从睡眠中唤醒）
   // #if POWER_MANAGEMENT_ENABLED
   // printESP32WakeupReason();
@@ -60,7 +55,7 @@ void setup() {
   
   initWiFi(WIFI_POWER_SAVE_ENABLED, handleWifiStatusChange); // 初始化WiFi
   
-  initMQTT(); // 初始化MQTT
+  initMQTT(mqttCallback); // 初始化MQTT
 
   // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
   // initBluetooth();

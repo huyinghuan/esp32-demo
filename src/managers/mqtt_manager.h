@@ -5,8 +5,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+typedef void (*MqttCallback)(char* topic, byte* payload, unsigned int length);
 // MQTT管理函数
-void initMQTT();
+void initMQTT(MqttCallback callback);
 void connectToMQTT();
 void checkMQTTConnection();
 void handleMQTTLoop();
@@ -16,9 +17,6 @@ bool isMQTTConnected();
 bool publishMessage(const char* topic, const char* message);
 void publishStatus(const char* status);
 
-// MQTT回调函数
-void mqttCallback(char* topic, byte* payload, unsigned int length);
-void handleCommand(String command);
 
 // MQTT客户端
 extern WiFiClient espClient;

@@ -41,7 +41,7 @@ static LEDState* findOrCreateLEDState(int pin) {
 
 void initLED(int pin) {
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, HIGH); // ESP32上通常HIGH为关闭
+  digitalWrite(pin, LOW); // ESP32上通常HIGH为关闭
   
   // 初始化LED状态
   LEDState* state = findOrCreateLEDState(pin);
@@ -70,17 +70,17 @@ void toggleLED(int pin) {
   }
 }
 
-void blinkLED(int pin, int times, int delayMs) {
-  // 阻塞式闪烁
-  for (int i = 0; i < times; i++) {
-    setLED(pin, true);  // 亮
-    delay(delayMs);
-    setLED(pin, false); // 灭
-    if (i < times - 1) { // 最后一次不延迟
-      delay(delayMs);
-    }
-  }
-}
+// void blinkLED(int pin, int times, int delayMs) {
+//   // 阻塞式闪烁
+//   for (int i = 0; i < times; i++) {
+//     setLED(pin, true);  // 亮
+//     delay(delayMs);
+//     setLED(pin, false); // 灭
+//     if (i < times - 1) { // 最后一次不延迟
+//       delay(delayMs);
+//     }
+//   }
+// }
 
 void blinkLEDAsync(int pin, int times, int delayMs) {
   // 非阻塞式闪烁设置
