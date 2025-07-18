@@ -2,5 +2,6 @@
 #define DEVICE_HANDLE_H
 
 #include "button_handle.h"
+#include "wifi_handle.h"
 
 #endif // DEVICE_HANDLE_H

@@ -21,12 +21,22 @@ const int MAX_CONSECUTIVE_FAILS = 3; // 最大连续失败次数
 const char* _ssid = WIFI_SSID;
 const char* _password = WIFI_PASSWORD;
 
+const bool auto_connect = WIFI_AUTO_CONNECT; // 是否自动连接WiFi
+
 const unsigned long wifiCheckInterval = 5000;
 
-void initWiFi(bool enableSaveMode) {
+WiFiStatusHandler _statusChangeHandler = nullptr;
+void defaultWiFiStatusHandler(bool isConnected) {}
+
+void initWiFi(bool enableSaveMode, WiFiStatusHandler statusHandler) {
   DEBUG_PRINTLN("初始化WiFi...");
   wifiPowerSaveEnabled = enableSaveMode;
   WiFi.mode(WIFI_STA);
+  if(statusHandler != nullptr) {
+    _statusChangeHandler = statusHandler;
+  }else{
+    _statusChangeHandler = defaultWiFiStatusHandler; // 使用默认处理函数
+  }
   connectToWiFi();
 }
 
@@ -81,6 +91,7 @@ void connectToWiFi() {
     //setLED(ledPin, true);  // WiFi连接成功，点亮LED
     lastWiFiActivity = millis();
     
+    _statusChangeHandler(true); // 调用状态处理函数
     // 连接成功后切换到节能模式
     // if (wifiPowerSaveEnabled) {
     //   setWiFiPowerMode(WIFI_POWER_MODEM);
@@ -102,9 +113,10 @@ void connectToWiFi() {
       DEBUG_PRINT(WIFI_RETRY_COOLDOWN / 1000);
       DEBUG_PRINTLN(" 秒冷却期");
     }
-    
+    _statusChangeHandler(false); // 调用状态处理函数
     //setLED(ledPin, false);
   }
+
 }
 
 void checkWiFiConnection() {
@@ -116,7 +128,11 @@ void checkWiFiConnection() {
     if (WiFi.status() != WL_CONNECTED) {
       DEBUG_PRINTLN("WiFi断开，尝试重连...");
      // setLED(ledPin, false);
-      connectToWiFi();
+      
+      _statusChangeHandler(false); // 调用状态处理函数
+      if(auto_connect){
+        connectToWiFi();
+      }
     } else {
       // 更新最后活动时间
       lastWiFiActivity = currentTime;

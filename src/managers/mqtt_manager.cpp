@@ -32,31 +32,31 @@ void initMQTT() {
 
 void connectToMQTT() {
   if (!isWiFiConnected()) {
-    Serial.print("wifi未连接 ");
+    DEBUG_PRINT("wifi未连接 ");
     return;
   }
   
-  Serial.print("正在连接MQTT服务器: ");
-  Serial.println(mqtt_server);
+  DEBUG_PRINT("正在连接MQTT服务器: ");
+  DEBUG_PRINTLN(mqtt_server);
   
   // 尝试连接MQTT
   String clientID = generateClientID();
   if (client.connect(clientID.c_str(), mqtt_user, mqtt_pass)) {
-    Serial.println("MQTT连接成功!");
+    DEBUG_PRINTLN("MQTT连接成功!");
     
     // 订阅命令主题
     client.subscribe(sub_topic_command.c_str());
     client.subscribe(SUB_GLOBAL_TOPIC_COMMAND);
-    Serial.print("已订阅主题: ");
-    Serial.println(sub_topic_command);
-    Serial.println(SUB_GLOBAL_TOPIC_COMMAND);
-    
+    DEBUG_PRINT("已订阅主题: ");
+    DEBUG_PRINTLN(sub_topic_command);
+    DEBUG_PRINTLN(SUB_GLOBAL_TOPIC_COMMAND);
+
     // LED闪烁表示MQTT连接成功
     // blinkLED(ledPin, 3, 200);
     
   } else {
-    Serial.print("MQTT连接失败, 错误码: ");
-    Serial.println(client.state());
+    DEBUG_PRINT("MQTT连接失败, 错误码: ");
+    DEBUG_PRINTLN(client.state());
   }
 }
 
@@ -82,17 +82,17 @@ bool isMQTTConnected() {
 
 bool publishMessage(const char* topic, const char* message) {
   if (!client.connected()) {
-    Serial.println("MQTT未连接，无法发布消息");
+    DEBUG_PRINTLN("MQTT未连接，无法发布消息");
     return false;
   }
   if (client.publish(topic, message)) {
-    Serial.print("发布消息到 ");
-    Serial.print(topic);
-    Serial.print(": ");
-    Serial.println(message);
+    DEBUG_PRINT("发布消息到 ");
+    DEBUG_PRINT(topic);
+    DEBUG_PRINT(": ");
+    DEBUG_PRINTLN(message);
     return  true;
   } 
-  Serial.println("消息发布失败");
+  DEBUG_PRINTLN("消息发布失败");
   return false;
 }
 
@@ -102,16 +102,16 @@ void publishStatus(const char* status) {
 
 // MQTT消息回调函数
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("收到MQTT消息 [");
-  Serial.print(topic);
-  Serial.print("]: ");
+  DEBUG_PRINT("收到MQTT消息 [");
+  DEBUG_PRINT(topic);
+  DEBUG_PRINT("]: ");
   
   String message = "";
   for (int i = 0; i < length; i++) {
     message += (char)payload[i];
   }
-  Serial.println(message);
-  
+  DEBUG_PRINTLN(message);
+
 //   // 处理接收到的命令
 //   if (String(topic) == sub_topic_command) {
 //     handleCommand(message);
@@ -127,7 +127,7 @@ void handleCommand(String command) {
 //   } else if (command == "reset_counter") {
 //     buttonPressCount = 0;
 //     publishMessage(pub_topic_status.c_str(), "counter_reset");
-//     Serial.println("按钮计数器已重置");
+//     DEBUG_PRINTln("按钮计数器已重置");
 //   } else if (command == "get_count") {
 //     String countMsg = "button_count:" + String(buttonPressCount);
 //     publishMessage(pub_topic_status.c_str(), countMsg.c_str());
@@ -139,7 +139,7 @@ void handleCommand(String command) {
 
 #else
 void initMQTT() {
-  Serial.println("MQTT未启用，跳过初始化");
+  DEBUG_PRINTLN("MQTT未启用，跳过初始化");
 }
 bool isMQTTConnected(){
   return false;

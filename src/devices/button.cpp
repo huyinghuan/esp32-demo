@@ -22,8 +22,6 @@ void initButton(int buttonPin, ButtonPressCallback callback) {
   lastButtonState = HIGH;
   lastDebounceTime = 0;
   lastButtonPressTime = 0;
-  
-  Serial.println("按钮模块初始化完成");
 }
 
 void checkButton() {

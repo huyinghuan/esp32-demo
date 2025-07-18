@@ -1,10 +1,8 @@
 #include <Arduino.h>
 #include "config.h"
 #include "managers/managers.h"
-#include "devices/button.h"
-#include "devices/led.h"
 #include "messages/messages.h"
-#include "devices/screen.h"
+#include "devices/devices.h"
 #include "handles/handle.h"
 #include "output/status_manager.h"
 
@@ -54,15 +52,15 @@ void setup() {
   // 初始化设备ID
   initDeviceID();
   // 初始化设备主题
-  // initDeviceTopics();
+  initDeviceTopics();
   
   // 配置GPIO
   initLED(ledPin);
   initScreen();
   
-  initWiFi(WIFI_POWER_SAVE_ENABLED); // 初始化WiFi
+  initWiFi(WIFI_POWER_SAVE_ENABLED, handleWifiStatusChange); // 初始化WiFi
   
-  // initMQTT(); // 初始化MQTT
+  initMQTT(); // 初始化MQTT
 
   // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
   // initBluetooth();
@@ -87,19 +85,17 @@ void loop() {
 
   printStatusToScreen(); // 打印状态到屏幕
 
-  // checkMQTTConnection();
-  
   // 检查蓝牙连接状态
   // checkBluetoothConnection();
   
   // 处理MQTT消息
-  // handleMQTTLoop();
+  handleMQTTLoop();
   
   // 检查按钮状态
   checkButton();
   
   // 发送心跳
-  // checkHeartbeat();
+  checkHeartbeat();
   
   // 处理串口命令
   handleSerialCommand();

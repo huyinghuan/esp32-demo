@@ -2,8 +2,7 @@
 #include "mqtt_manager.h"
 #include "device_id_manager.h"
 #include "../messages/messages.h"
-#include <WiFi.h>
-
+#include "../config.h"
 #if WIFI_ENABLED && MQTT_ENABLED
 // 心跳状态变量
 unsigned long lastHeartbeat = 0;
