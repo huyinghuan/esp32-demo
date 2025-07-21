@@ -14,29 +14,30 @@ const unsigned long checkInterval = 5000; // 状态检查间隔时间（毫秒�
 
 // 设置是否显示状态信息
 void setShowingStatus(bool show) {
-    if (showingStatus == show) {
-        return; // 如果状态没有变化，直接返回
+    bool forceUpdate = false; // 不强制更新
+    if (showingStatus != show && show) {
+        #if SCREEN_SSD1306_ENABLED
+        clearScreen();
+        #endif
+        forceUpdate = true; // 如果状态从隐藏变为显示，强制更新
     }
     showingStatus = show;
     if (show) {
         previousMillis = 0; // 重置计时器
-        #if SCREEN_SSD1306_ENABLED
-        clearScreen();
-        #endif
-        printStatusToScreen();
+        printStatusToScreen(forceUpdate);
     }
 }
-void printStatusToScreen(){
+void printStatusToScreen(bool forceUpdate) {
     if (!showingStatus) {
         return; // 如果不需要显示状态信息，直接返回
     }
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis < checkInterval) {
+    if (currentMillis - previousMillis < checkInterval && !forceUpdate) {
         return;
     }
     previousMillis = currentMillis;
 
-    if (getIP() != wifiIP || getWifiSignal() != wifiSignal) {
+    if (forceUpdate || (getIP() != wifiIP || getWifiSignal() != wifiSignal)){
         wifiIP = getIP();
         wifiSignal = getWifiSignal();
         // 如果启用OLED屏幕，显示状态信息
