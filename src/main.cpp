@@ -54,7 +54,7 @@ void setup() {
   initScreen();
   
   initWiFi(WIFI_POWER_SAVE_ENABLED, handleWifiStatusChange); // 初始化WiFi
-  
+  delay(1000); // 等待WiFi连接稳定
   initMQTT(mqttCallback); // 初始化MQTT
 
   // 根据配置决定是否初始化蓝牙（默认禁用以节省功耗）
@@ -97,7 +97,11 @@ void loop() {
   
   // 更新LED状态（处理异步闪烁）
   updateLEDs();
-  
+
+  if(isMQTTIdle()){
+    // 如果MQTT 10秒内未接收到新消息，展示状态
+    setShowingStatus(true);
+  }
   delay(10);
 }
 

@@ -41,7 +41,7 @@ static LEDState* findOrCreateLEDState(int pin) {
 
 void initLED(int pin) {
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, LOW); // ESP32上通常HIGH为关闭
+  digitalWrite(pin, HIGH); // ESP32上通常HIGH为关闭
   
   // 初始化LED状态
   LEDState* state = findOrCreateLEDState(pin);

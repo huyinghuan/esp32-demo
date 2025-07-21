@@ -4,5 +4,5 @@
 // MQTT回调函数
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 void handleCommand(String command);
-
+bool isMQTTIdle();
 #endif

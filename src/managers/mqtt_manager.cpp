@@ -21,8 +21,6 @@ PubSubClient client(espClient);
 // MQTT状态变量
 unsigned long lastMqttCheck = 0;
 
-// 外部变量声明（在main.cpp中定义）
-extern unsigned long buttonPressCount;
 
 void initMQTT(MqttCallback callback) {
   client.setServer(mqtt_server, mqtt_port);

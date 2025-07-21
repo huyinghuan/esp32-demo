@@ -13,7 +13,14 @@ typedef enum {
   WIFI_POWER_OFF        // 完全关闭WiFi
 } wifi_power_mode_t;
 
-typedef void (*WiFiStatusHandler)(bool isConnected);
+typedef enum {
+  WIFI_DISCONNECTED = 0,
+  WIFI_CONNECTING,
+  WIFI_CONNECTED,
+  WIFI_FAILED
+} WiFiStatus;
+
+typedef void (*WiFiStatusHandler)(WiFiStatus status);
 
 // WiFi管理函数
 void initWiFi(bool enableSaveMode, WiFiStatusHandler statusHandler = nullptr);
