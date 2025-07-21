@@ -39,6 +39,7 @@ void connectToMQTT() {
   
   // 尝试连接MQTT
   String clientID = generateClientID();
+  client.setKeepAlive(60);
   if (client.connect(clientID.c_str(), mqtt_user, mqtt_pass)) {
     DEBUG_PRINTLN("MQTT连接成功!");
     

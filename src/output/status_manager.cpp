@@ -14,9 +14,15 @@ const unsigned long checkInterval = 5000; // 状态检查间隔时间（毫秒�
 
 // 设置是否显示状态信息
 void setShowingStatus(bool show) {
+    if (showingStatus == show) {
+        return; // 如果状态没有变化，直接返回
+    }
     showingStatus = show;
     if (show) {
         previousMillis = 0; // 重置计时器
+        #if SCREEN_SSD1306_ENABLED
+        clearScreen();
+        #endif
         printStatusToScreen();
     }
 }
